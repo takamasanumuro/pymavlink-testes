@@ -1,8 +1,9 @@
 from pymavlink import mavutil
 import time
 import turtle
+import requests
 
-#initiate turtle
+#initiate turtle to indicate reception of messages
 window = turtle.Screen()
 window.title("Ping Pong")
 window.bgcolor("black")
@@ -14,6 +15,9 @@ indicator.shape("circle")
 indicator.color("#800000")
 indicator.penup()
 indicator.goto(0, 0)
+
+# api-endpoint
+scadaURL = "http://44.204.180.188:8080/ScadaBR/httpds?"
 
 port = 14550
 connection = mavutil.mavlink_connection(f'udpin:localhost:{port}')
@@ -40,6 +44,8 @@ while True:
         alt = message.alt
         print(f"GPS data: {lat}, {lon}, {alt}")
         indicator.color("#FF0000")
+        params = {'latitude':lat, 'longitude':lon, 'altitude':alt}
+        request = requests.get(url = scadaURL, params = params)
     connection.mav.heartbeat_send(mavutil.mavlink.MAV_TYPE_GROUND_ROVER, mavutil.mavlink.MAV_AUTOPILOT_INVALID, 0, 0, 0)
     indicator.color("#800000")
     #time.sleep(1)
